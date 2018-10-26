@@ -28,4 +28,4 @@ if __name__=="__main__":
             149:188:161:167:105:178:214:193:159:183:200:139:152:128:
                     124:114:162:183:154'''.replace('\n\t', '')
     new_id = kuaiyinshi_id(video_id)
-    print(new_id)
+    #print(new_id)

@@ -17,7 +17,7 @@ class KuaiYinShi():
     @staticmethod
     def getClipsList():
         ClipList = []
-        clip = clipClass()
+
         millis = int(round(time.time() * 1000))
         print(millis)
         test_url = "https://kuaiyinshi.com/api/dou-yin/recommend/?callback=showData&_="+str(millis)
@@ -37,20 +37,22 @@ class KuaiYinShi():
         res = html[9:-2]
         contentJson = json.loads(res)
         js = json.dumps(contentJson, sort_keys=True, indent=4, separators=(',', ':'))
-        print(js, file = f)
+        #print(js, file = f)
         data_list = contentJson.get('data', [])
         for data in data_list:
-            print(data['video_url'])
+            clip = clipClass()
+            #print(data['video_url'])
             old_id = (re.findall('(?<=video_id=).*?(?=&line)', data['video_url']))[0]
-            print(old_id)
+            #print(old_id)
             new_id = kysid.kuaiyinshi_id(old_id)
-            print(new_id)
+            #print(new_id)
             data['video_url'] = data['video_url'].replace(old_id, new_id).replace('playwm', 'play')
-            print(data['video_url'])
+            #print(data['video_url'])
             clip.clipID = new_id
             clip.digg_count = data['statistics']['zan']
             clip.DownloadURL = 'http:' + data['video_url']
             ClipList.append(clip)
+        #print(*ClipList, sep = ", ") 
         return ClipList
            
  

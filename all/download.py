@@ -2,7 +2,8 @@
 
 import os
 import sys, getopt
-sys.path.append("C:\\Users\\Globalock1\\Desktop\\randomfile\\autoyou")
+import string
+sys.path.append("..")
 #print(sys.path)
 import hashlib
 import codecs
@@ -104,6 +105,21 @@ class DownloadWorker(Thread):
             download_url = res.headers['Location']
             self._download(uri, 'video', download_url, target_folder)
         elif medium_type == 'all':
+            download_url = 'https://aweme.snssdk.com/aweme/v1/play/?{0}'
+            download_params = {
+                'video_id': uri,
+                'line': '0',
+                'ratio': '720p',
+                'media_type': '4',
+                'vr_type': '0',
+                'test_cdn': 'None',
+                'improve_bitrate': '0'
+            }
+            download_url = download_url.format(
+                '&'.join(
+                    [key + '=' + download_params[key] for key in download_params]
+                )
+            )
             self._download(uri, 'video', download_url, target_folder)
 
     def _download(self, uri, medium_type, medium_url, target_folder):
@@ -117,7 +133,7 @@ class DownloadWorker(Thread):
             return
 
         file_path = os.path.join(target_folder, file_name)
-        fileExistFlag = False#self.videoDowloadedCheck(file_name)
+        fileExistFlag = self.videoDowloadedCheck(file_name)
         print(str(fileExistFlag))
         if not (os.path.isfile(file_path) or fileExistFlag):#如果文件不存在，即下载
             print("Downloading %s from %s.\n" % (file_name, medium_url))
@@ -166,6 +182,16 @@ class CrawlerScheduler(object):
 
 if __name__ == "__main__":
     content, opts, args = None, None, []
-
-    L = KuaiYinShi.getClipsList()
-    CrawlerScheduler(L)
+    for i in range(0,10,1):
+        L = KuaiYinShi.getClipsList()
+        LL = L[:]
+        #print('8888888888888888888888888888888888888888888')
+        #print(*LL, sep = ", ") 
+        for item in L:
+            #print("item.digg_count %s" % item.digg_count)
+            if not (item.digg_count>diggLevelNumber):
+                LL.remove(item)
+                #print('remove')
+        #print('8888888888888888888888888888888888888888888')
+        #print(*LL, sep = ", ") 
+        CrawlerScheduler(LL)

@@ -1,17 +1,20 @@
 # 导入SQLite驱动:
 import sqlite3
+import sys
+import os
 # 连接到SQLite数据库
 # 数据库文件是test.db
 # 如果文件不存在，会自动在当前目录创建:
 
 class clipClass(object):
     def __init__(self):
-        self.clipID = None
-        self.aweme_id = None
-        self.digg_count = None
+        self.clipID = 'N/A'
+        self.aweme_id = 'N/A'
+        self.digg_count = 'N/A'
+        self.DownloadURL = 'N/A'
 
     def __str__(self):
-        return "xx" + str(self.clipID) + str(self.aweme_id) + str(self.digg_count)
+        return "xx" + str(self.clipID) + str(self.aweme_id) + str(self.digg_count) + self.DownloadURL
 
 
 class clipsDB(object):
@@ -20,7 +23,8 @@ class clipsDB(object):
         self.create_table()
         
     def connectDB(self):
-        self.conn = sqlite3.connect('clipsdb.db')
+        dir = os.path.split(os.path.realpath(__file__))[0] + '\\'
+        self.conn = sqlite3.connect(dir+'clipsdb.db')
         print ("Opened database successfully");
     def closeDB(self):
         self.conn.commit()
@@ -30,15 +34,15 @@ class clipsDB(object):
         self.connectDB()
         cursor = self.conn.cursor()
         try:
-            create_record_cmd="insert into CLIPS (clipID, aweme_id, digg_count, used0, used1) values ('" + clip.clipID + "', '" + clip.aweme_id + "', '" + clip.digg_count + "', " + "0, " + "0 " + ")"
+            create_record_cmd="insert into CLIPS (clipID, aweme_id, digg_count, DownloadURL, used0, used1) values ('" + clip.clipID + "', '" + clip.aweme_id + "', '" + clip.digg_count + "', '" + clip.DownloadURL + "', " + "0, " + "0 " + ")"
             
-            #print(create_record_cmd)
+            print(create_record_cmd)
             cursor.execute(create_record_cmd)
             cursor.close()
             self.closeDB()
             return True
         except:
-            print('insert item error')
+            print('item exsiting')
             cursor.close()
             self.closeDB()
             return False
@@ -85,6 +89,7 @@ class clipsDB(object):
             (clipID TEXT primary key,
             aweme_id TEXT,
             digg_count TEXT,
+            DownloadURL TEXT,
             used0 BOOL,
             used1 BOOL);
             '''
@@ -103,9 +108,7 @@ if __name__ == "__main__":
     content, opts, args = None, None, []
     clip1 = clipClass()
     clip1.clipID = 'v0200fc10000beropd6lg9jigectmqsg'
-    clip1.aweme_id = '6608905698904378632'
-    clip1.digg_count = '7.2w'
     clipDB_instance = clipsDB()
-    #clipDB_instance.insertOneClip(clip1)
-    clipReturn = clipDB_instance.getOneClipById(clip1.clipID)
-    print(clipReturn)
+    clipDB_instance.insertOneClip(clip1)
+    #clipReturn = clipDB_instance.getOneClipById(clip1.clipID)
+    #print(clipReturn)
